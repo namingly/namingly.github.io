@@ -2,12 +2,13 @@ import * as React from "react"
 import classNames from "classnames"
 import "./index.css"
 
+
 const NameSearcherContext = React.createContext<{
     name: string,
     setName: React.Dispatch<React.SetStateAction<string>>
 }>({
     name: "",
-    setName: () => {}
+    setName: () => { }
 })
 
 function NameSearcher() {
@@ -15,15 +16,26 @@ function NameSearcher() {
     return (
         <NameSearcherContext.Provider value={{ name, setName }}>
             <InputField />
-            <Response
+            <ResponseGroup
                 title="npm"
                 details={[
                     {
                         name: "react",
-                        visible: true
+                        visible: true,
+                        abbreviate: false
                     }, {
                         name: "react-dom",
-                        visible: false
+                        visible: false,
+                        abbreviate: false
+                    },
+                    {
+                        name: "@types/react",
+                        visible: true,
+                        abbreviate: true
+                    }, {
+                        name: "@types/react-dom",
+                        visible: false,
+                        abbreviate: true
                     }
                 ]}
             />
@@ -42,7 +54,6 @@ function InputField() {
                 value={context.name}
                 onChange={(event) => {
                     context.setName(event.target.value)
-                    console.log(event.target.value)
                 }}
             />
         </div>
@@ -51,6 +62,33 @@ function InputField() {
 
 function Response(
     {
+        //icon,
+        name,
+        visible,
+        abbreviate
+    }: {
+        icon?: string,
+        name: string,
+        visible: boolean,
+        abbreviate: boolean
+    }
+) {
+    return (
+        <li
+            className={classNames({
+                "response": true,
+                "enable": visible,
+                "disable": !visible,
+                "abbreviate": abbreviate
+            })}
+        >
+            {name + " : " + name}
+        </li>
+    )
+}
+
+function ResponseGroup(
+    {
         title,
         details
     }: {
@@ -58,36 +96,81 @@ function Response(
         details: {
             icon?: string,
             name: string,
-            visible: boolean
+            visible: boolean,
+            abbreviate: boolean
         }[]
     }
 ) {
-    const context = React.useContext(NameSearcherContext)
+    //const context = React.useContext(NameSearcherContext)
 
-    const listItems: React.ReactElement[] = []
-    for (let i=0; i<details.length; i++) {
-        const detail = details[i]
-        listItems.push(<li
-            className={classNames({
-                "response": true,
-                "list-items": true,
-                "enable": detail.visible,
-                "disable": !detail.visible
-            })}
-            key={i}
-        >
-            {detail.name + " : " + context.name}
-        </li>)
+    const listItems: [
+        [
+            boolean,
+            React.Dispatch<React.SetStateAction<boolean>>
+        ],
+        React.ReactElement
+    ][] = [];
+    let abbreviateListItems: [
+        [
+            boolean,
+            React.Dispatch<React.SetStateAction<boolean>>
+        ],
+        React.ReactElement
+    ][] = [];
+    for (let i = 0; i < details.length; i++) {
+        const detail = details[i];
+        const listItemState = React.useState(detail.abbreviate);
+        listItems[i] = [
+            listItemState,
+            (<Response
+                //icon={detail.icon}
+                name={detail.name}
+                visible={detail.visible}
+                abbreviate={listItemState[0]}
+                key={i}
+            />)
+        ]
+        if (detail.abbreviate) {
+            abbreviateListItems.push(listItems[i])
+        }
     }
+    console.log(abbreviateListItems)
+
+    document.documentElement.style.setProperty('--added-columns', listItems.length.toString());
+
+    const [checkVisible, setCheckVisible] = React.useState(false)
 
 
     return (
-        <div className="response main">
+        <div className="response-group main">
             <details open>
-                <summary className="response summary">{title}</summary>
-                {listItems}
+                <summary className="response-group summary">{title}</summary>
+                {listItems.map((listItem) => listItem[1])}
             </details>
-            <button className="response view-more">View more</button>
+            <button
+                className={
+                    classNames(
+                        "response-group view-more",
+                        {
+                            "move": checkVisible
+                        }
+                    )
+                }
+                onClick={() => {
+                    setCheckVisible(true)
+                    for (let i = 0; i < abbreviateListItems.length; i++) {
+                        const response = abbreviateListItems[i]
+                        setTimeout(() => {
+                            response[0][1](false)
+                        }, 250 + 250 / abbreviateListItems.length * (i + 1))
+                    }
+                    setTimeout(() => {
+                        setCheckVisible(false)
+                    }, 500)
+                }}
+            >
+                View more
+            </button>
         </div>
     )
 }
@@ -95,5 +178,5 @@ function Response(
 export {
     NameSearcher,
     InputField,
-    Response
+    ResponseGroup as Response
 }
