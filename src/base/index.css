@@ -1,0 +1,74 @@
+:root {
+    --added-columns: 1;
+}
+
+.input-field {
+    border-radius: 20px;
+    border-width: 0px;
+    box-shadow: 6px 6px 10px 0px rgba(138, 43, 226, 0.4);
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 1.25em;
+    font-weight: bolder;
+    outline: 0px;
+    padding: 20px;
+}
+
+.response.main {
+    padding: 20px;
+}
+.response.summary {
+    cursor: pointer;
+    font-size: larger;
+    font-weight: bolder;
+    user-select: none;
+}
+.response.list-items {
+    font-weight: bold;
+    list-style: none;
+}
+.response.list-items.enable {
+    color: blueviolet;
+}
+.response.list-items.disable {
+    color: gray;
+}
+.response.view-more {
+    background-color: white;
+
+    border-color: blue;
+    border-width: 0;
+    border-left-style: solid;
+    border-left-width: 2px;
+    border-bottom-style: dotted;
+    border-bottom-width: 2px;
+
+    color: blue;
+    cursor: pointer;
+    font-weight: bolder;
+}
+.response.view-more:hover {
+    border-color: blueviolet;
+    color: blueviolet;
+}
+.response.view-more:active {
+    animation-name: more;
+    animation-duration: 0.5s;
+    animation-delay: 0s;
+    animation-timing-function: ease;
+    animation-fill-mode: backwards;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+}
+@keyframes more {
+    0% {
+        margin-top: 5px;
+        padding-top: 1px;
+    }
+    50% {
+        padding-top: calc((1em + 2px) * var(--added-columns));
+    }
+    100% {
+        margin-top: 5px;
+        padding-top: 1px;
+    }
+}
