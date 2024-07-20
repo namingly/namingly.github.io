@@ -16,3 +16,6 @@ updates:
     groups:
       dependencies:
         patterns: ["*"]
+    ignore:
+      - dependency-name: "eslint"
+        versions: ["9.x"]
